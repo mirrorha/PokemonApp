@@ -64,6 +64,7 @@ class PokemonListViewModel @Inject constructor(
                 pokemons.forEachIndexed { index, pokemon ->
 
                     launch {
+                        delay(2000)
                         val url = pokemonRepository.fetchPokemonImageUrl(pokemon.id)
 
                         _uiState.update {

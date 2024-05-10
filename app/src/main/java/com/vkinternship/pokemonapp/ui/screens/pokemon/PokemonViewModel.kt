@@ -10,6 +10,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -45,6 +46,7 @@ class PokemonViewModel @AssistedInject constructor(
         viewModelScope.launch {
 
             try {
+                delay(2000)
                 _uiState.value = PokemonUiState.Loaded(pokemonRepository.fetchPokemon(pokemonId))
             }
 

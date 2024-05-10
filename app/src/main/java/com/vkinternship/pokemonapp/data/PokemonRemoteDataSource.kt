@@ -1,10 +1,8 @@
 package com.vkinternship.pokemonapp.data
 
 import com.vkinternship.pokemonapp.data.model.PokemonDetails
-import com.vkinternship.pokemonapp.data.model.PokemonItem
 import com.vkinternship.pokemonapp.data.model.PokemonListItem
 import javax.inject.Inject
-
 
 
 class PokemonRemoteDataSource @Inject constructor(
@@ -12,7 +10,7 @@ class PokemonRemoteDataSource @Inject constructor(
 ) {
 
     suspend fun fetchPokemons() = pokemonApi
-            .fetchPokemons(100, 0)
+            .fetchPokemons(200, 0)
             .results
             .map { pokemon ->
                 PokemonListItem(

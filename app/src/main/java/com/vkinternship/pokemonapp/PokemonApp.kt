@@ -17,8 +17,13 @@ fun PokemonApp(
     pokemonAppState: PokemonAppState,
     modifier: Modifier = Modifier
 ) {
+
     Scaffold(
-        topBar =  { TopAppBar(title =  { Text(text = "Pokemon App") } ) }
+        topBar =  {
+            TopAppBar(
+                title =  { Text(text = "Pokemon App") },
+                ) },
+        modifier = modifier
 
     ) { innerPadding ->
 
