@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -61,41 +62,18 @@ fun PokemonListScreen(
 
             is PokemonListUiState.Loaded -> {
 
-                val pokemons = uiState.pokemons
-
                 LazyColumn {
-                    pokemons.forEach { pokemon ->
-                        val pokemonId = pokemon.id
-                        item(key = pokemonId) {
-                            Card(
-                                onClick = { onPokemonClicked(pokemonId) },
-                                modifier = Modifier
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                ) {
-                                    AsyncImage(
-                                        model = pokemon.url,
-                                        contentDescription = null,
-                                        placeholder = painterResource(R.drawable.pokeball),
-                                        modifier = Modifier.size(128.dp)
-                                    )
-                                    Text(
-                                        text = pokemon.name.uppercase(Locale.getDefault()),
-                                        fontStyle = FontStyle.Italic,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.align(Alignment.CenterVertically)
-                                            .fillMaxSize()
-                                    )
-
-                                }
-                            }
-                        }
+                    items(
+                        items = uiState.pokemons,
+                        key = { it.id }
+                    ) { pokemon ->
+                        PokemonListItem(
+                            pokemon = pokemon,
+                            onPokemonClicked = onPokemonClicked
+                        )
                     }
                 }
             }
         }
     }
-
 }
