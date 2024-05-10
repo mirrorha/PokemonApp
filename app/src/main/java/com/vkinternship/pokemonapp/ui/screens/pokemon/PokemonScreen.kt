@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.vkinternship.pokemonapp.R
+import com.vkinternship.pokemonapp.ui.component.ErrorScreen
 import com.vkinternship.pokemonapp.ui.component.LoadingPokeball
 
 
@@ -116,6 +117,8 @@ fun PokemonScreen(
 
                     }
                 }
+
+                is PokemonUiState.Error -> ErrorScreen(error = uiState.error.toString())
             }
         }
 

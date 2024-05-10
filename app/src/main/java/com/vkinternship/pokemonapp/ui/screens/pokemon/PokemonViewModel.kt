@@ -1,6 +1,5 @@
 package com.vkinternship.pokemonapp.ui.screens.pokemon
 
-import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,6 +20,10 @@ sealed interface PokemonUiState {
 
     data class Loaded(
         val pokemon: PokemonDetails
+    ) : PokemonUiState
+
+    data class Error(
+        val error: Exception
     ) : PokemonUiState
 
 }
@@ -51,7 +54,7 @@ class PokemonViewModel @AssistedInject constructor(
             }
 
             catch (e: Exception) {
-                Log.e("PokemonViewModel", "$e")
+                _uiState.value = PokemonUiState.Error(e)
             }
         }
 

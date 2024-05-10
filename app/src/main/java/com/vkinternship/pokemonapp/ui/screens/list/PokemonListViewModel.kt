@@ -1,6 +1,5 @@
 package com.vkinternship.pokemonapp.ui.screens.list
 
-import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,12 +15,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-private const val TAG= "PokemonListViewModel"
+private const val TAG = "PokemonListViewModel"
 
 sealed interface PokemonListUiState {
     data object Loading : PokemonListUiState
     data class Loaded(
         val pokemons: List<PokemonListItem>
+    ) : PokemonListUiState
+
+    data class Error(
+        val error: Exception
     ) : PokemonListUiState
 }
 
@@ -77,7 +80,7 @@ class PokemonListViewModel @Inject constructor(
             }
 
             catch (e: Exception) {
-                Log.e(TAG, "$e")
+                _uiState.value = PokemonListUiState.Error(e)
             }
         }
     }
