@@ -1,6 +1,5 @@
 package com.vkinternship.pokemonapp
 
-import com.vkinternship.pokemonapp.data.OfflineFirstPokemonRepository
 import com.vkinternship.pokemonapp.data.PokemonRepository
 import com.vkinternship.pokemonapp.data.model.PokemonDetails
 import com.vkinternship.pokemonapp.data.model.PokemonListItem
@@ -12,49 +11,86 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.Test
-import kotlin.test.assertEquals
+import kotlinx.coroutines.withContext
+import org.junit.Before
+import kotlin.test.Test
 import kotlin.test.assertTrue
 
 
-//class TestPokemonRepository: PokemonRepository {
-//    override suspend fun fetchPokemons(): List<PokemonListItem> {
-//        delay(1000)
-//        return listOf(PokemonListItem(1, "1"), PokemonListItem(2, "2"))
-//    }
-//
-//    override suspend fun fetchPokemonImageUrl(id: Int): String =
-//        "url"
-//
-//    override suspend fun fetchPokemon(id: Int): PokemonDetails =
-//        PokemonDetails("name", "defaultUrl")
-//
-//}
-//
-//class PokemonListViewModelUnitTest {
-//
-//    private val viewModel = PokemonListViewModel(
-//        pokemonRepository = TestPokemonRepository()
-//    )
-//
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun `test pokemons loaded`() = runTest {
-//
-//        Dispatchers.setMain(UnconfinedTestDispatcher())
-//        viewModel.initialize()
-//        delay(10000)
-//        assertEquals(viewModel.uiState.value , PokemonListUiState.Loaded(listOf()))
-//
-//
-//    }
-//    @Test
-//    fun `test pokemons loading`() {
-//
-//    }
-//    @Test
-//    fun `test pokemons loading error`() {
-//
-//    }
-//}
+open class TestPokemonRepository: PokemonRepository {
+
+    override suspend fun fetchPokemons(): List<PokemonListItem> {
+
+        withContext(Dispatchers.Default) {
+            delay(1000)
+        }
+
+        return listOf(PokemonListItem(1, "1"), PokemonListItem(2, "2"))
+    }
+
+    override suspend fun fetchPokemonImageUrl(id: Int): String =
+        "url"
+
+    override suspend fun fetchPokemon(id: Int): PokemonDetails =
+        PokemonDetails("name", "defaultUrl")
+
+}
+
+class TestErrorPokemonRepository: TestPokemonRepository() {
+
+    override suspend fun fetchPokemons(): List<PokemonListItem> {
+        throw Exception("Error")
+        return super.fetchPokemons()
+    }
+
+}
+
+class PokemonListViewModelUnitTest {
+
+    private val testPokemonRepository = TestPokemonRepository()
+
+    private lateinit var viewModel: PokemonListViewModel
+    @Before
+    fun setup() {
+        viewModel = PokemonListViewModel(testPokemonRepository)
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `test pokemons loaded`() = runTest {
+
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+
+        withContext(Dispatchers.Default) {
+            viewModel.initialize()
+            delay(3000)
+        }
+
+        assertTrue(viewModel.uiState.value is PokemonListUiState.Loaded)
+
+    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `test pokemons loading`() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+
+        withContext(Dispatchers.Default) {
+            viewModel.initialize()
+        }
+
+        assertTrue(viewModel.uiState.value is PokemonListUiState.Loading)
+    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `test pokemons loading error`() = runTest {
+
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+
+        val errorViewModel = PokemonListViewModel(TestErrorPokemonRepository())
+
+        errorViewModel.initialize()
+
+        assertTrue(errorViewModel.uiState.value is PokemonListUiState.Error)
+    }
+}

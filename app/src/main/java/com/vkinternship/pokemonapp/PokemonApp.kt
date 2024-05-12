@@ -32,7 +32,6 @@ fun PokemonApp(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-
             PokemonNavHost(
                 appState = pokemonAppState,
             )
